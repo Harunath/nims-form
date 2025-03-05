@@ -1,0 +1,209 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Application {
+  id                 String   @id @default(uuid())
+  principalInvestigator String
+  department         String
+  submissionDate     DateTime
+  reviewType        ReviewType
+  title             String
+  acronym           String?
+  protocolNumber    String
+  versionNumber     String
+
+  status            ApplicationStatus @default(DRAFT) // <-- New status field
+
+  investigators     Investigator[]
+  funding          Funding?
+  researchOverview ResearchOverview?
+  methodology      Methodology?
+  participantInfo  ParticipantInfo?
+  consent          Consent?
+  payment          Payment?
+  confidentiality  Confidentiality?
+  declarations Declaration?  // One-to-One: One declaration per application
+  checklists   Checklist[]
+  createdAt        DateTime @default(now())
+}
+
+model Investigator {
+  id           String   @id @default(uuid())
+  name         String
+  designation  String
+  qualification String
+  department   String
+  institution  String
+  address      String
+  application  Application @relation(fields: [applicationId], references: [id])
+  applicationId String @unique
+}
+
+model Funding {
+  id           String   @id @default(uuid())
+  totalBudget  Float
+  fundingType  FundingType
+  fundingAgency String?
+  application  Application @relation(fields: [applicationId], references: [id])
+  applicationId String  @unique
+}
+
+model ResearchOverview {
+  id            String   @id @default(uuid())
+  summary       String
+  studyType     StudyType
+  application   Application @relation(fields: [applicationId], references: [id])
+  applicationId String  @unique
+}
+
+model Methodology {
+  id             String   @id @default(uuid())
+  sampleSize     Int
+  justification  String
+  externalLab    Boolean
+  externalLabDetails String?
+  application    Application @relation(fields: [applicationId], references: [id])
+  applicationId  String  @unique
+}
+
+model ParticipantInfo {
+  id                   String   @id @default(uuid())
+  participantType      ParticipantType
+  vulnerableJustification String?
+  safeguards          String?
+  reimbursement       Boolean
+  reimbursementDetails String?
+  advertisement       Boolean
+  advertisementDetails String?
+  application         Application @relation(fields: [applicationId], references: [id])
+  applicationId       String  @unique
+}
+
+model Consent {
+  id                     String   @id @default(uuid())
+  waiverRequested        Boolean
+  consentDocumentVersion String
+  languagesProvided      String[]
+  translationCertificate Boolean
+  understandingTools     String?
+  application           Application @relation(fields: [applicationId], references: [id])
+  applicationId         String  @unique
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  treatmentFree Boolean
+  compensation  Boolean
+  details       String?
+  application   Application @relation(fields: [applicationId], references: [id])
+  applicationId String  @unique
+}
+
+model Confidentiality {
+  id                 String   @id @default(uuid())
+  hasIdentifiers     Boolean
+  identifierType     IdentifierType
+  accessControl      Boolean
+  storageDetails     String?
+  application       Application @relation(fields: [applicationId], references: [id])
+  applicationId     String  @unique
+}
+
+model Declaration {
+  id               String    @id @default(uuid())
+  applicationId    String    @unique
+  application      Application @relation(fields: [applicationId], references: [id])
+  piName           String
+  piSignature      String
+  piDate           DateTime
+  coPiName         String?
+  coPiSignature    String?
+  coPiDate         DateTime?
+  coInvestigator   CoInvestigator[] @relation("Declaration_CoInvestigator")
+  privacyProtected Boolean
+  compliance       Boolean
+  amendmentsReport Boolean
+  accurateRecords  Boolean
+}
+
+model CoInvestigator {
+  id               String    @id @default(uuid())
+  declarationId    String
+  declaration      Declaration @relation(fields: [declarationId], references: [id], name: "Declaration_CoInvestigator")
+  name            String
+  signature       String
+  date            DateTime
+}
+
+model Checklist {
+  id               String    @id @default(uuid())
+  applicationId    String    @unique
+  application      Application @relation(fields: [applicationId], references: [id])
+  coverLetter      Boolean
+  investigatorCV   Boolean
+  gcpTraining      Boolean
+  ecClearance      Boolean
+  mouCollaborators Boolean
+  protocolCopy     Boolean
+  participantPISICF Boolean
+  assentForm       Boolean
+  waiverConsent    Boolean
+  proformaCRF      Boolean
+  advertisement    Boolean
+  insurance        Boolean?
+  otherDocuments   String?
+}
+
+// Enum Types
+enum ReviewType {
+  EXPEDITED
+  FULL_COMMITTEE
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum FundingType {
+  SELF
+  INSTITUTIONAL
+  AGENCY
+}
+
+enum StudyType {
+  INTERVENTIONAL
+  CASE_CONTROL
+  COHORT
+  RETROSPECTIVE
+  EPIDEMIOLOGICAL
+  CROSS_SECTIONAL
+  SOCIO_BEHAVIORAL
+  BIOLOGICAL
+}
+
+enum ParticipantType {
+  HEALTHY
+  PATIENT
+  VULNERABLE
+  OTHER
+}
+
+enum IdentifierType {
+  ANONYMOUS
+  IDENTIFIABLE
+}
