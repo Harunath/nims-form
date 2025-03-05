@@ -1,18 +1,20 @@
 import React, { ReactNode } from "react";
 
-const layout = ({ children }: { children: ReactNode }) => {
+const Layout = ({ children }: { children: ReactNode }) => {
 	return (
-		<div>
-			<div>
-				<h1 className="text-3xl font-semibold text-gray-800">
-					Proforma 1B: Application Form for Initial Review of Biomedical and
-					Health research studies
-				</h1>
-				<p>Fill out the form below to apply</p>
-			</div>
-			{children}
+		<div className="min-h-screen bg-gray-100">
+			<header className="bg-white shadow-md p-6">
+				<div className="max-w-4xl mx-auto">
+					<h1 className="text-3xl font-semibold text-gray-800 mb-2">
+						Proforma 1B: Application Form for Initial Review of Biomedical and
+						Health Research Studies
+					</h1>
+					<p className="text-gray-600">Fill out the form below to apply</p>
+				</div>
+			</header>
+			<main className="max-w-4xl mx-auto p-6">{children}</main>
 		</div>
 	);
 };
 
-export default layout;
+export default Layout;

@@ -6,6 +6,7 @@ export async function POST(req: Request) {
 	try {
 		const body = await req.json();
 		const validatedData = declarationSchema.parse(body);
+		console.log("📌 Validated data declarationSchema:", validatedData);
 
 		// Ensure the application exists before adding a declaration
 		const application = await prisma.application.findUnique({

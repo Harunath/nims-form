@@ -47,7 +47,7 @@ model Investigator {
   department   String
   institution  String
   address      String
-  application  Application @relation(fields: [applicationId], references: [id])
+  application  Application @relation(fields: [applicationId], references: [id],onDelete: Cascade)
   applicationId String @unique
 }
 
@@ -56,7 +56,7 @@ model Funding {
   totalBudget  Float
   fundingType  FundingType
   fundingAgency String?
-  application  Application @relation(fields: [applicationId], references: [id])
+  application  Application @relation(fields: [applicationId], references: [id],onDelete: Cascade)
   applicationId String  @unique
 }
 
@@ -64,7 +64,7 @@ model ResearchOverview {
   id            String   @id @default(uuid())
   summary       String
   studyType     StudyType
-  application   Application @relation(fields: [applicationId], references: [id])
+  application   Application @relation(fields: [applicationId], references: [id],onDelete: Cascade)
   applicationId String  @unique
 }
 
@@ -74,7 +74,7 @@ model Methodology {
   justification  String
   externalLab    Boolean
   externalLabDetails String?
-  application    Application @relation(fields: [applicationId], references: [id])
+  application    Application @relation(fields: [applicationId], references: [id],onDelete: Cascade)
   applicationId  String  @unique
 }
 
@@ -87,7 +87,7 @@ model ParticipantInfo {
   reimbursementDetails String?
   advertisement       Boolean
   advertisementDetails String?
-  application         Application @relation(fields: [applicationId], references: [id])
+  application         Application @relation(fields: [applicationId], references: [id],onDelete: Cascade)
   applicationId       String  @unique
 }
 
@@ -98,7 +98,7 @@ model Consent {
   languagesProvided      String[]
   translationCertificate Boolean
   understandingTools     String?
-  application           Application @relation(fields: [applicationId], references: [id])
+  application           Application @relation(fields: [applicationId], references: [id],onDelete: Cascade)
   applicationId         String  @unique
 }
 
@@ -107,7 +107,7 @@ model Payment {
   treatmentFree Boolean
   compensation  Boolean
   details       String?
-  application   Application @relation(fields: [applicationId], references: [id])
+  application   Application @relation(fields: [applicationId], references: [id],onDelete: Cascade)
   applicationId String  @unique
 }
 
@@ -117,14 +117,14 @@ model Confidentiality {
   identifierType     IdentifierType
   accessControl      Boolean
   storageDetails     String?
-  application       Application @relation(fields: [applicationId], references: [id])
+  application       Application @relation(fields: [applicationId], references: [id],onDelete: Cascade)
   applicationId     String  @unique
 }
 
 model Declaration {
   id               String    @id @default(uuid())
   applicationId    String    @unique
-  application      Application @relation(fields: [applicationId], references: [id])
+  application      Application @relation(fields: [applicationId], references: [id],onDelete: Cascade)
   piName           String
   piSignature      String
   piDate           DateTime
@@ -141,7 +141,7 @@ model Declaration {
 model CoInvestigator {
   id               String    @id @default(uuid())
   declarationId    String
-  declaration      Declaration @relation(fields: [declarationId], references: [id], name: "Declaration_CoInvestigator")
+  declaration      Declaration @relation(fields: [declarationId], references: [id], name: "Declaration_CoInvestigator",onDelete: Cascade)
   name            String
   signature       String
   date            DateTime
@@ -150,19 +150,36 @@ model CoInvestigator {
 model Checklist {
   id               String    @id @default(uuid())
   applicationId    String    @unique
-  application      Application @relation(fields: [applicationId], references: [id])
-  coverLetter      Boolean
-  investigatorCV   Boolean
-  gcpTraining      Boolean
-  ecClearance      Boolean
-  mouCollaborators Boolean
-  protocolCopy     Boolean
-  participantPISICF Boolean
-  assentForm       Boolean
-  waiverConsent    Boolean
-  proformaCRF      Boolean
-  advertisement    Boolean
-  insurance        Boolean?
+  application      Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  // ✅ Boolean flags (file required or not)
+  coverLetter      Boolean @default(false)
+  investigatorCV   Boolean  @default(false)
+  gcpTraining      Boolean  @default(false)
+  ecClearance      Boolean  @default(false)
+  mouCollaborators Boolean  @default(false)
+  protocolCopy     Boolean  @default(false)
+  participantPISICF Boolean  @default(false)
+  assentForm       Boolean  @default(false)
+  waiverConsent    Boolean  @default(false)
+  proformaCRF      Boolean  @default(false)
+  advertisement    Boolean  @default(false)
+  insurance        Boolean?  @default(false)
+  
+  // ✅ Store uploaded file IDs
+  coverLetterId      String?  // File ID from MongoDB
+  investigatorCVID   String?
+  gcpTrainingId      String?
+  ecClearanceId      String?
+  mouCollaboratorsId String?
+  protocolCopyId     String?
+  participantPISICFId String?
+  assentFormId       String?
+  waiverConsentId    String?
+  proformaCRFId      String?
+  advertisementId    String?
+  insuranceId        String?
+  
   otherDocuments   String?
 }
 

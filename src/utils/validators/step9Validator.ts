@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { checklistSchema } from "@/lib/validation"; // ✅ Import Checklist Schema
 
 interface Declaration {
 	id?: string;
@@ -17,6 +18,9 @@ interface Declaration {
 
 interface Checklist {
 	id?: string;
+	applicationId: string;
+
+	// ✅ Boolean flags for required documents
 	coverLetter: boolean;
 	investigatorCV: boolean;
 	gcpTraining: boolean;
@@ -30,7 +34,20 @@ interface Checklist {
 	advertisement: boolean;
 	insurance?: boolean;
 	otherDocuments?: string;
-	applicationId: string;
+
+	// ✅ File IDs (Stored in PostgreSQL, referenced from MongoDB)
+	coverLetterId?: string;
+	investigatorCVID?: string;
+	gcpTrainingId?: string;
+	ecClearanceId?: string;
+	mouCollaboratorsId?: string;
+	protocolCopyId?: string;
+	participantPISICFId?: string;
+	assentFormId?: string;
+	waiverConsentId?: string;
+	proformaCRFId?: string;
+	advertisementId?: string;
+	insuranceId?: string;
 }
 
 export const declarationSchema = z.object({
@@ -62,26 +79,9 @@ export function step9Validator1(data: Declaration) {
 	return { success: true, data: result.data };
 }
 
-export const checklistSchema = z.object({
-	coverLetter: z.boolean(),
-	investigatorCV: z.boolean(),
-	gcpTraining: z.boolean(),
-	ecClearance: z.boolean(),
-	mouCollaborators: z.boolean(),
-	protocolCopy: z.boolean(),
-	participantPISICF: z.boolean(),
-	assentForm: z.boolean(),
-	waiverConsent: z.boolean(),
-	proformaCRF: z.boolean(),
-	advertisement: z.boolean(),
-	insurance: z.boolean().optional(),
-	otherDocuments: z.string().optional(),
-	applicationId: z.string().uuid("Invalid application ID"),
-});
-
 export function step9Validator2(data: Checklist) {
 	const result = checklistSchema.safeParse(data);
-
+	console.log(result);
 	if (!result.success) {
 		return {
 			success: false,

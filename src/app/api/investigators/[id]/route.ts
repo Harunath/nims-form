@@ -7,24 +7,25 @@ export async function GET(
 	{ params }: { params: { id: string } }
 ) {
 	try {
-		const investigator = await prisma.investigator.findUnique({
-			where: { id: params.id },
+		console.log("📌 Received applicationId:", params.id);
+
+		// ✅ Use findMany instead of findUnique
+		const investigators = await prisma.investigator.findMany({
+			where: { applicationId: params.id }, // ✅ Correct query
 		});
 
-		if (!investigator) {
+		if (investigators.length === 0) {
 			return NextResponse.json(
-				{ error: "Investigator not found" },
+				{ error: "No investigators found for this application" },
 				{ status: 404 }
 			);
 		}
 
-		return NextResponse.json(investigator, { status: 200 });
+		return NextResponse.json(investigators, { status: 200 });
 	} catch (error) {
-		if (error instanceof Error) {
-			return NextResponse.json({ error: error.message }, { status: 500 });
-		}
+		console.error("🚨 Error fetching investigators:", error);
 		return NextResponse.json(
-			{ error: "Failed to fetch investigator" },
+			{ error: "Failed to fetch investigators" },
 			{ status: 500 }
 		);
 	}

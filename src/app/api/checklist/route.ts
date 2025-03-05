@@ -5,7 +5,9 @@ import { checklistSchema } from "@/lib/validation";
 export async function POST(req: Request) {
 	try {
 		const body = await req.json();
+		console.log("📌 Received data:", body);
 		const validatedData = checklistSchema.parse(body);
+		console.log("📌 Validated data checklistSchema:", validatedData);
 
 		// Ensure the application exists before adding a checklist
 		const application = await prisma.application.findUnique({

@@ -58,8 +58,7 @@ export default function Step7() {
 		event.preventDefault();
 		setError(null);
 		setErrors({});
-		formData.applicationId =
-			applicationId || "c11fd5cd-d60c-4ed9-8f18-281704f8fad8";
+		formData.applicationId = applicationId || "";
 		const validationResult = step7Validator(formData);
 		console.log(validationResult);
 		if (!validationResult.success) {
@@ -91,60 +90,72 @@ export default function Step7() {
 	}
 
 	return (
-		<div>
-			<h2 className="text-xl font-bold">Step 7: Consent</h2>
+		<div className="space-y-6 p-6 bg-white shadow-md rounded-lg">
+			<h2 className="text-2xl font-semibold text-gray-900">Step 7: Consent</h2>
 
 			<form onSubmit={saveConsent} className="space-y-4">
-				<label className="flex items-center">
+				<div className="flex items-center space-x-2">
 					<input
 						type="checkbox"
 						checked={formData.waiverRequested}
 						onChange={(e) =>
 							setFormData({ ...formData, waiverRequested: e.target.checked })
 						}
-						className="mr-2"
+						className="h-5 w-5 rounded border-gray-300 focus:ring-blue-500"
 					/>
-					Waiver of Consent Requested?
-				</label>
+					<label className="text-gray-700">Waiver of Consent Requested?</label>
+				</div>
 
-				<input
-					type="text"
-					name="consentDocumentVersion"
-					placeholder="Consent Document Version"
-					value={formData.consentDocumentVersion}
-					onChange={(e) =>
-						setFormData({ ...formData, consentDocumentVersion: e.target.value })
-					}
-					className="w-full p-2 border rounded"
-					required
-				/>
-				{errors.consentDocumentVersion && (
-					<p className="text-red-500">{errors.consentDocumentVersion}</p>
-				)}
+				<div>
+					<input
+						type="text"
+						name="consentDocumentVersion"
+						placeholder="Consent Document Version"
+						value={formData.consentDocumentVersion}
+						onChange={(e) =>
+							setFormData({
+								...formData,
+								consentDocumentVersion: e.target.value,
+							})
+						}
+						className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+						required
+					/>
+					{errors.consentDocumentVersion && (
+						<p className="text-sm text-red-500 mt-1">
+							{errors.consentDocumentVersion}
+						</p>
+					)}
+				</div>
 
-				<input
-					type="text"
-					name="languagesProvided"
-					placeholder="Languages Provided (comma-separated)"
-					value={
-						formData.languagesProvided && formData.languagesProvided.join(", ")
-					}
-					onChange={(e) =>
-						setFormData({
-							...formData,
-							languagesProvided: e.target.value
-								.split(",")
-								.map((lang) => lang.trim()),
-						})
-					}
-					className="w-full p-2 border rounded"
-					required
-				/>
-				{errors.languagesProvided && (
-					<p className="text-red-500">{errors.languagesProvided}</p>
-				)}
+				<div>
+					<input
+						type="text"
+						name="languagesProvided"
+						placeholder="Languages Provided (comma-separated)"
+						value={
+							formData.languagesProvided &&
+							formData.languagesProvided.join(", ")
+						}
+						onChange={(e) =>
+							setFormData({
+								...formData,
+								languagesProvided: e.target.value
+									.split(",")
+									.map((lang) => lang.trim()),
+							})
+						}
+						className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+						required
+					/>
+					{errors.languagesProvided && (
+						<p className="text-sm text-red-500 mt-1">
+							{errors.languagesProvided}
+						</p>
+					)}
+				</div>
 
-				<label className="flex items-center">
+				<div className="flex items-center space-x-2">
 					<input
 						type="checkbox"
 						checked={formData.translationCertificate}
@@ -154,55 +165,39 @@ export default function Step7() {
 								translationCertificate: e.target.checked,
 							})
 						}
-						className="mr-2"
+						className="h-5 w-5 rounded border-gray-300 focus:ring-blue-500"
 					/>
-					Translation Certificate Available?
-				</label>
+					<label className="text-gray-700">
+						Translation Certificate Available?
+					</label>
+				</div>
 
-				<textarea
-					name="understandingTools"
-					placeholder="Understanding Tools (if any)"
-					value={formData.understandingTools}
-					onChange={(e) =>
-						setFormData({ ...formData, understandingTools: e.target.value })
-					}
-					className="w-full p-2 border rounded"
-					rows={3}
-				/>
-				{errors.understandingTools && (
-					<p className="text-red-500">{errors.understandingTools}</p>
-				)}
+				<div>
+					<textarea
+						name="understandingTools"
+						placeholder="Understanding Tools (if any)"
+						value={formData.understandingTools}
+						onChange={(e) =>
+							setFormData({ ...formData, understandingTools: e.target.value })
+						}
+						className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+						rows={3}
+					/>
+					{errors.understandingTools && (
+						<p className="text-sm text-red-500 mt-1">
+							{errors.understandingTools}
+						</p>
+					)}
+				</div>
 
 				<button
 					type="submit"
-					className="px-4 py-2 bg-blue-500 text-white rounded">
+					className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
 					{consent ? "Update Consent" : "Save Consent"}
 				</button>
 			</form>
 
-			{error && <p className="text-red-500">{error}</p>}
-
-			{/* Navigation */}
-			<div className="flex justify-between mt-4">
-				<button
-					onClick={() =>
-						router.push(
-							`/applications/new?step=6&applicationId=${applicationId}`
-						)
-					}
-					className="px-4 py-2 bg-gray-300 rounded">
-					Back
-				</button>
-				<button
-					onClick={() =>
-						router.push(
-							`/applications/new?step=8&applicationId=${applicationId}`
-						)
-					}
-					className="px-4 py-2 bg-blue-500 text-white rounded">
-					Next
-				</button>
-			</div>
+			{error && <p className="text-sm text-red-500 mt-2">{error}</p>}
 		</div>
 	);
 }

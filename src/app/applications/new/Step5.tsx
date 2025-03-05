@@ -87,78 +87,105 @@ export default function Step5() {
 	}
 
 	return (
-		<div>
-			<h2 className="text-xl font-bold">Step 5: Methodology</h2>
+		<div className="max-w-2xl mx-auto p-6">
+			<h2 className="text-2xl font-bold text-gray-800 mb-6">
+				Step 5: Methodology
+			</h2>
 
-			<form onSubmit={saveMethodology} className="space-y-4">
-				<input
-					type="number"
-					name="sampleSize"
-					placeholder="Sample Size"
-					value={formData.sampleSize}
-					onChange={(e) =>
-						setFormData({ ...formData, sampleSize: Number(e.target.value) })
-					}
-					className="w-full p-2 border rounded"
-				/>
-				{errors.sampleSize && (
-					<p className="text-red-500">{errors.sampleSize}</p>
-				)}
-
-				<textarea
-					name="justification"
-					placeholder="Justification"
-					value={formData.justification}
-					onChange={(e) =>
-						setFormData({ ...formData, justification: e.target.value })
-					}
-					className="w-full p-2 border rounded"
-					rows={4}
-					required
-				/>
-				{errors.justification && (
-					<p className="text-red-500">{errors.justification}</p>
-				)}
-
-				<label className="flex items-center">
+			<form onSubmit={saveMethodology} className="grid grid-cols-2 gap-4">
+				{/* Sample Size */}
+				<div className="col-span-2">
+					<label className="block text-gray-700 font-medium mb-1">
+						Sample Size
+					</label>
 					<input
-						type="checkbox"
-						checked={formData.externalLab}
+						type="number"
+						name="sampleSize"
+						placeholder="Enter Sample Size"
+						value={formData.sampleSize}
 						onChange={(e) =>
-							setFormData({ ...formData, externalLab: e.target.checked })
+							setFormData({ ...formData, sampleSize: Number(e.target.value) })
 						}
-						className="mr-2"
+						className="w-full p-2 border rounded focus:outline-blue-500"
 					/>
-					External Lab Required?
-				</label>
+					{errors.sampleSize && (
+						<p className="text-red-500 text-sm mt-1">{errors.sampleSize}</p>
+					)}
+				</div>
 
+				{/* Justification */}
+				<div className="col-span-2">
+					<label className="block text-gray-700 font-medium mb-1">
+						Justification
+					</label>
+					<textarea
+						name="justification"
+						placeholder="Provide Justification"
+						value={formData.justification}
+						onChange={(e) =>
+							setFormData({ ...formData, justification: e.target.value })
+						}
+						className="w-full p-2 border rounded focus:outline-blue-500"
+						rows={4}
+						required
+					/>
+					{errors.justification && (
+						<p className="text-red-500 text-sm mt-1">{errors.justification}</p>
+					)}
+				</div>
+
+				{/* External Lab Checkbox */}
+				<div className="col-span-2">
+					<label className="flex items-center">
+						<input
+							type="checkbox"
+							checked={formData.externalLab}
+							onChange={(e) =>
+								setFormData({ ...formData, externalLab: e.target.checked })
+							}
+							className="mr-2 w-4 h-4"
+						/>
+						<span className="text-gray-700">External Lab Required?</span>
+					</label>
+				</div>
+
+				{/* External Lab Details */}
 				{formData.externalLab && (
-					<>
+					<div className="col-span-2">
+						<label className="block text-gray-700 font-medium mb-1">
+							External Lab Details
+						</label>
 						<input
 							type="text"
 							name="externalLabDetails"
-							placeholder="External Lab Details"
+							placeholder="Provide External Lab Details"
 							value={formData.externalLabDetails}
 							onChange={(e) =>
 								setFormData({ ...formData, externalLabDetails: e.target.value })
 							}
-							className="w-full p-2 border rounded"
+							className="w-full p-2 border rounded focus:outline-blue-500"
 							required
 						/>
 						{errors.externalLabDetails && (
-							<p className="text-red-500">{errors.externalLabDetails}</p>
+							<p className="text-red-500 text-sm mt-1">
+								{errors.externalLabDetails}
+							</p>
 						)}
-					</>
+					</div>
 				)}
 
-				<button
-					type="submit"
-					className="px-4 py-2 bg-blue-500 text-white rounded">
-					{methodology ? "Update Methodology" : "Save Methodology"}
-				</button>
+				{/* Submit Button */}
+				<div className="col-span-2 flex justify-end mt-4">
+					<button
+						type="submit"
+						className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+						{methodology ? "Update Methodology" : "Save Methodology"}
+					</button>
+				</div>
 			</form>
 
-			{error && <p className="text-red-500">{error}</p>}
+			{/* Error Message */}
+			{error && <p className="text-red-500 mt-4">{error}</p>}
 		</div>
 	);
 }

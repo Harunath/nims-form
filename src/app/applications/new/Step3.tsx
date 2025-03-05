@@ -94,89 +94,102 @@ export default function Step3() {
 	}
 
 	return (
-		<div>
-			<h2 className="text-xl font-bold">Step 3: Funding</h2>
+		<div className="max-w-2xl mx-auto p-6">
+			<h2 className="text-2xl font-bold text-gray-800 mb-6">Step 3: Funding</h2>
 
-			<form onSubmit={saveFunding} className="space-y-4">
-				<input
-					type="number"
-					name="totalBudget"
-					placeholder="Total Budget"
-					value={formData.totalBudget}
-					onChange={(e) =>
-						setFormData({ ...formData, totalBudget: Number(e.target.value) })
-					}
-					className="w-full p-2 border rounded"
-				/>
-				{errors.totalBudget && (
-					<p className="text-red-500">{errors.totalBudget}</p>
-				)}
+			<form onSubmit={saveFunding} className="grid grid-cols-2 gap-4">
+				{/* Total Budget */}
+				<div className="col-span-2">
+					<label className="block text-gray-700 font-medium mb-1">
+						Total Budget
+					</label>
+					<input
+						type="number"
+						name="totalBudget"
+						placeholder="Enter total budget"
+						value={formData.totalBudget}
+						onChange={(e) =>
+							setFormData({ ...formData, totalBudget: Number(e.target.value) })
+						}
+						className="w-full p-2 border rounded focus:outline-blue-500"
+					/>
+					{errors.totalBudget && (
+						<p className="text-red-500 text-sm mt-1">{errors.totalBudget}</p>
+					)}
+				</div>
 
-				<select
-					name="fundingType"
-					value={formData.fundingType}
-					onChange={(e) =>
-						setFormData({
-							...formData,
-							fundingType: e.target.value as Funding["fundingType"],
-						})
-					}
-					className="w-full p-2 border rounded"
-					required>
-					<option value="SELF">Self</option>
-					<option value="INSTITUTIONAL">Institutional</option>
-					<option value="AGENCY">Agency</option>
-				</select>
+				{/* Funding Type */}
+				<div className="col-span-2">
+					<label className="block text-gray-700 font-medium mb-1">
+						Funding Type
+					</label>
+					<select
+						name="fundingType"
+						value={formData.fundingType}
+						onChange={(e) =>
+							setFormData({
+								...formData,
+								fundingType: e.target.value as Funding["fundingType"],
+							})
+						}
+						className="w-full p-2 border rounded focus:outline-blue-500"
+						required>
+						<option value="SELF">Self</option>
+						<option value="INSTITUTIONAL">Institutional</option>
+						<option value="AGENCY">Agency</option>
+					</select>
+				</div>
 
+				{/* Funding Agency - Only if Agency is selected */}
 				{formData.fundingType === "AGENCY" && (
-					<>
+					<div className="col-span-2">
+						<label className="block text-gray-700 font-medium mb-1">
+							Funding Agency
+						</label>
 						<input
 							type="text"
 							name="fundingAgency"
-							placeholder="Funding Agency"
+							placeholder="Enter funding agency name"
 							value={formData.fundingAgency}
 							onChange={(e) =>
 								setFormData({ ...formData, fundingAgency: e.target.value })
 							}
-							className="w-full p-2 border rounded"
+							className="w-full p-2 border rounded focus:outline-blue-500"
 							required
 						/>
 						{errors.fundingAgency && (
-							<p className="text-red-500">{errors.fundingAgency}</p>
+							<p className="text-red-500 text-sm mt-1">
+								{errors.fundingAgency}
+							</p>
 						)}
-					</>
+					</div>
 				)}
 
-				<button
-					type="submit"
-					className="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer">
-					{funding ? "Update Funding" : "Save Funding"}
-				</button>
+				{/* Submit Button */}
+				<div className="col-span-2 flex justify-end mt-4">
+					<button
+						type="submit"
+						className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+						{funding ? "Update Funding" : "Save Funding"}
+					</button>
+				</div>
 			</form>
 
-			{error && <p className="text-red-500">{error}</p>}
+			{/* Error Message */}
+			{error && <p className="text-red-500 mt-4">{error}</p>}
 
-			{/* Navigation */}
-			{/* <div className="flex justify-between mt-4">
-				<button
-					onClick={() =>
-						router.push(
-							`/applications/new?step=2&applicationId=${applicationId}`
-						)
-					}
-					className="px-4 py-2 bg-gray-300 rounded">
-					Back
-				</button>
+			{/* Navigation Buttons */}
+			<div className="flex justify-end mt-6">
 				<button
 					onClick={() =>
 						router.push(
 							`/applications/new?step=4&applicationId=${applicationId}`
 						)
 					}
-					className="px-4 py-2 bg-blue-500 text-white rounded">
-					Next
+					className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+					{"Save & Next"}
 				</button>
-			</div> */}
+			</div>
 		</div>
 	);
 }

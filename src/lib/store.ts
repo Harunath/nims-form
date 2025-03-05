@@ -6,6 +6,6 @@ interface ApplicationState {
 }
 
 export const useApplicationStore = create<ApplicationState>((set) => ({
-	applicationId: null,
+	applicationId: "",
 	setApplicationId: (id) => set({ applicationId: id }),
 }));

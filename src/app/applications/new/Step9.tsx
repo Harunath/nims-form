@@ -1,53 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useApplicationStore } from "@/lib/store";
-import {
-	step9Validator1,
-	step9Validator2,
-} from "@/utils/validators/step9Validator";
-
-interface Declaration {
-	id?: string;
-	piName: string;
-	piSignature: string;
-	piDate: string;
-	coPiName?: string;
-	coPiSignature?: string;
-	coPiDate?: string;
-	privacyProtected: boolean;
-	compliance: boolean;
-	amendmentsReport: boolean;
-	accurateRecords: boolean;
-	applicationId: string;
-}
-
-interface Checklist {
-	id?: string;
-	coverLetter: boolean;
-	investigatorCV: boolean;
-	gcpTraining: boolean;
-	ecClearance: boolean;
-	mouCollaborators: boolean;
-	protocolCopy: boolean;
-	participantPISICF: boolean;
-	assentForm: boolean;
-	waiverConsent: boolean;
-	proformaCRF: boolean;
-	advertisement: boolean;
-	insurance?: boolean;
-	otherDocuments?: string;
-	applicationId: string;
-}
+import { useRouter } from "next/navigation";
 
 export default function Step9() {
+	const { applicationId } = useApplicationStore(); // ✅ Get applicationId
 	const router = useRouter();
-	const { applicationId } = useApplicationStore(); // Zustand store
-
-	const [declaration, setDeclaration] = useState<Declaration | null>(null);
-	const [checklist, setChecklist] = useState<Checklist | null>(null);
-	const [formData, setFormData] = useState({
-		// Declaration
+	const [declaration, setDeclaration] = useState({
 		piName: "",
 		piSignature: "",
 		piDate: "",
@@ -58,184 +17,220 @@ export default function Step9() {
 		compliance: false,
 		amendmentsReport: false,
 		accurateRecords: false,
-		// Checklist
-		coverLetter: false,
-		investigatorCV: false,
-		gcpTraining: false,
-		ecClearance: false,
-		mouCollaborators: false,
-		protocolCopy: false,
-		participantPISICF: false,
-		assentForm: false,
-		waiverConsent: false,
-		proformaCRF: false,
-		advertisement: false,
-		insurance: false,
-		otherDocuments: "",
-		applicationId: applicationId || "",
 	});
 
-	const [errors, setErrors] = useState<Record<string, string>>({});
-	const [error, setError] = useState<string | null>(null);
-
-	// Fetch existing data if applicationId exists
+	// ✅ Fetch Existing Declaration Data
 	useEffect(() => {
 		const fetchData = async () => {
 			if (!applicationId) return;
+
 			try {
-				console.log(`Fetching data for applicationId: ${applicationId}`);
-
-				const [declarationRes, checklistRes] = await Promise.all([
-					fetch(`/api/declaration?applicationId=${applicationId}`),
-					fetch(`/api/checklist?applicationId=${applicationId}`),
-				]);
-
-				if (declarationRes.ok) {
-					const declarationData: Declaration = await declarationRes.json();
-					setDeclaration(declarationData);
-					setFormData((prev) => ({ ...prev, ...declarationData }));
-				} else {
-					console.warn("No existing declaration found.");
+				const res = await fetch(
+					`/api/declaration?applicationId=${applicationId}`
+				);
+				if (res.ok) {
+					const data = await res.json();
+					setDeclaration(data);
 				}
-
-				if (checklistRes.ok) {
-					const checklistData: Checklist = await checklistRes.json();
-					setChecklist(checklistData);
-					setFormData((prev) => ({ ...prev, ...checklistData }));
-				} else {
-					console.warn("No existing checklist found.");
-				}
-			} catch (err) {
-				setError(err instanceof Error ? err.message : "Failed to fetch data");
+			} catch (error) {
+				console.error("Error fetching declaration:", error);
 			}
 		};
 
 		fetchData();
 	}, [applicationId]);
 
-	async function saveData(event: React.FormEvent<HTMLFormElement>) {
-		event.preventDefault();
-		setError(null);
-		setErrors({});
-
-		// Convert date fields properly
-		const declarationData = {
-			...formData,
-			piDate: formData.piDate ? new Date(formData.piDate).toISOString() : "",
-			coPiDate: formData.coPiDate
-				? new Date(formData.coPiDate).toISOString()
-				: undefined,
-		};
-
-		const checklistData = { ...formData };
-
-		const declarationValidation = step9Validator1(declarationData);
-		const checklistValidation = step9Validator2(checklistData);
-
-		if (!declarationValidation.success || !checklistValidation.success) {
-			setErrors({
-				...declarationValidation.errors,
-				...checklistValidation.errors,
-			});
-			return;
-		}
-
+	// ✅ Handle Final Submission
+	async function handleSubmit() {
 		try {
-			const res1 = await fetch("/api/declaration", {
-				method: declaration ? "PATCH" : "POST",
+			const declarationData = {
+				applicationId,
+				...declaration,
+				piDate: declaration.piDate
+					? new Date(declaration.piDate).toISOString()
+					: "",
+				coPiDate: declaration.coPiDate
+					? new Date(declaration.coPiDate).toISOString()
+					: undefined,
+			};
+
+			const res = await fetch("/api/declaration", {
+				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(declarationValidation.data),
+				body: JSON.stringify(declarationData),
 			});
 
-			if (!res1.ok) {
-				console.error("Failed to save declaration:", await res1.text());
-			}
+			if (!res.ok) throw new Error("Failed to save declaration");
 
-			const res2 = await fetch("/api/checklist", {
-				method: checklist ? "PATCH" : "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(checklistValidation.data),
-			});
-
-			if (!res2.ok) {
-				console.error("Failed to save checklist:", await res2.text());
-			}
-
-			router.push(`/applications/summary`);
-		} catch (err) {
-			setError(
-				err instanceof Error ? err.message : "An error occurred while saving."
-			);
+			console.log("✅ Declaration Saved Successfully!");
+			router.push(`/applications/new?step=10&applicationId=${applicationId}`);
+		} catch (error) {
+			console.error("🚨 Error submitting declaration:", error);
 		}
 	}
 
 	return (
-		<div>
-			<h2 className="text-xl font-bold">Step 9: Declaration & Checklist</h2>
+		<div className="max-w-4xl mx-auto p-6">
+			<h2 className="text-2xl font-bold text-gray-800 mb-6">
+				Step 9: Declaration
+			</h2>
 
-			{/* Existing Declaration */}
-			{declaration && (
-				<div className="border p-3 rounded bg-gray-100">
-					<h3 className="text-lg font-semibold">Existing Declaration</h3>
-					<p>
-						<strong>PI Name:</strong> {declaration.piName}
-					</p>
-					<p>
-						<strong>Privacy Protected:</strong>{" "}
-						{declaration.privacyProtected ? "Yes" : "No"}
-					</p>
-				</div>
-			)}
-
-			{/* Existing Checklist */}
-			{checklist && (
-				<div className="border p-3 rounded bg-gray-100">
-					<h3 className="text-lg font-semibold">Existing Checklist</h3>
-					<p>
-						<strong>Cover Letter:</strong>{" "}
-						{checklist.coverLetter ? "Yes" : "No"}
-					</p>
-					<p>
-						<strong>Protocol Copy:</strong>{" "}
-						{checklist.protocolCopy ? "Yes" : "No"}
-					</p>
-				</div>
-			)}
-
-			<form onSubmit={saveData} className="space-y-4">
-				<h3 className="text-lg font-semibold">Declaration</h3>
-
-				<input
-					type="text"
-					name="piName"
-					placeholder="Principal Investigator Name"
-					value={formData.piName}
-					onChange={(e) => setFormData({ ...formData, piName: e.target.value })}
-					className="w-full p-2 border rounded"
-					required
-				/>
-				{errors.piName && <p className="text-red-500">{errors.piName}</p>}
-
-				<label className="flex items-center">
+			<div className="grid grid-cols-1 gap-6">
+				{/* PI Information */}
+				<div>
+					<h3 className="text-lg font-semibold text-gray-700 mb-4">
+						Principal Investigator Information
+					</h3>
 					<input
-						type="checkbox"
-						checked={formData.privacyProtected}
+						type="text"
+						name="piName"
+						placeholder="Principal Investigator Name"
+						value={declaration.piName}
 						onChange={(e) =>
-							setFormData({ ...formData, privacyProtected: e.target.checked })
+							setDeclaration({ ...declaration, piName: e.target.value })
 						}
-						className="mr-2"
+						className="w-full p-2 border rounded border-gray-300 focus:ring focus:ring-blue-200"
+						required
 					/>
-					Privacy is Protected?
-				</label>
+					<input
+						type="text"
+						name="piSignature"
+						placeholder="Principal Investigator Signature"
+						value={declaration.piSignature}
+						onChange={(e) =>
+							setDeclaration({ ...declaration, piSignature: e.target.value })
+						}
+						className="w-full p-2 border rounded border-gray-300 focus:ring focus:ring-blue-200 mt-2"
+						required
+					/>
+					<input
+						type="date"
+						name="piDate"
+						value={declaration.piDate}
+						onChange={(e) =>
+							setDeclaration({ ...declaration, piDate: e.target.value })
+						}
+						className="w-full p-2 border rounded border-gray-300 focus:ring focus:ring-blue-200 mt-2"
+						required
+					/>
+				</div>
 
-				<button
-					type="submit"
-					className="px-4 py-2 bg-blue-500 text-white rounded">
-					Save and Continue
-				</button>
-			</form>
+				{/* Co-PI Section */}
+				<div>
+					<h3 className="text-lg font-semibold text-gray-700 mb-4">
+						Co-Principal Investigator Information (Optional)
+					</h3>
+					<input
+						type="text"
+						name="coPiName"
+						placeholder="Co-Principal Investigator Name"
+						value={declaration.coPiName}
+						onChange={(e) =>
+							setDeclaration({ ...declaration, coPiName: e.target.value })
+						}
+						className="w-full p-2 border rounded border-gray-300 focus:ring focus:ring-blue-200"
+					/>
+					<input
+						type="text"
+						name="coPiSignature"
+						placeholder="Co-Principal Investigator Signature"
+						value={declaration.coPiSignature}
+						onChange={(e) =>
+							setDeclaration({ ...declaration, coPiSignature: e.target.value })
+						}
+						className="w-full p-2 border rounded border-gray-300 focus:ring focus:ring-blue-200 mt-2"
+					/>
+					<input
+						type="date"
+						name="coPiDate"
+						value={declaration.coPiDate}
+						onChange={(e) =>
+							setDeclaration({ ...declaration, coPiDate: e.target.value })
+						}
+						className="w-full p-2 border rounded border-gray-300 focus:ring focus:ring-blue-200 mt-2"
+					/>
+				</div>
 
-			{error && <p className="text-red-500">{error}</p>}
+				{/* Privacy & Compliance */}
+				<div>
+					<h3 className="text-lg font-semibold text-gray-700 mb-4">
+						Privacy & Compliance
+					</h3>
+					<label className="flex items-center mb-2">
+						<input
+							type="checkbox"
+							checked={declaration.privacyProtected}
+							onChange={(e) =>
+								setDeclaration({
+									...declaration,
+									privacyProtected: e.target.checked,
+								})
+							}
+							className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+						/>
+						<span className="text-gray-700">Privacy is Protected?</span>
+					</label>
+					<label className="flex items-center mb-2">
+						<input
+							type="checkbox"
+							checked={declaration.compliance}
+							onChange={(e) =>
+								setDeclaration({ ...declaration, compliance: e.target.checked })
+							}
+							className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+						/>
+						<span className="text-gray-700">Compliance with Guidelines?</span>
+					</label>
+				</div>
+
+				{/* Amendments Report & Accurate Records */}
+				<div>
+					<h3 className="text-lg font-semibold text-gray-700 mb-4">
+						Amendments & Records
+					</h3>
+					<label className="flex items-center mb-2">
+						<input
+							type="checkbox"
+							checked={declaration.amendmentsReport}
+							onChange={(e) =>
+								setDeclaration({
+									...declaration,
+									amendmentsReport: e.target.checked,
+								})
+							}
+							className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+						/>
+						<span className="text-gray-700">
+							Will submit amendments report if required?
+						</span>
+					</label>
+					<label className="flex items-center mb-2">
+						<input
+							type="checkbox"
+							checked={declaration.accurateRecords}
+							onChange={(e) =>
+								setDeclaration({
+									...declaration,
+									accurateRecords: e.target.checked,
+								})
+							}
+							className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+						/>
+						<span className="text-gray-700">
+							Will maintain accurate records?
+						</span>
+					</label>
+				</div>
+
+				{/* Submit Button */}
+				<div className="flex justify-end">
+					<button
+						onClick={handleSubmit}
+						className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+						Save & Continue
+					</button>
+				</div>
+			</div>
 		</div>
 	);
 }

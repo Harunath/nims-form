@@ -81,8 +81,7 @@ export default function Step8() {
 		event.preventDefault();
 		setError(null);
 		setErrors({});
-		formData.applicationId =
-			applicationId || "c11fd5cd-d60c-4ed9-8f18-281704f8fad8";
+		formData.applicationId = applicationId || "";
 		// Split formData for separate validation
 		const paymentData = {
 			treatmentFree: formData.treatmentFree,
@@ -132,98 +131,131 @@ export default function Step8() {
 	}
 
 	return (
-		<div>
-			<h2 className="text-xl font-bold">Step 8: Payment & Confidentiality</h2>
+		<div className="max-w-4xl mx-auto p-6">
+			<h2 className="text-2xl font-bold text-gray-800 mb-6">
+				Step 8: Payment & Confidentiality
+			</h2>
 
-			<form onSubmit={saveData} className="space-y-4">
-				<h3 className="text-lg font-semibold">Payment</h3>
+			<form onSubmit={saveData} className="grid grid-cols-1 gap-6">
+				{/* Payment Section */}
+				<div>
+					<h3 className="text-lg font-semibold text-gray-700 mb-4">Payment</h3>
 
-				<label className="flex items-center">
-					<input
-						type="checkbox"
-						checked={formData.treatmentFree || payment?.treatmentFree}
-						onChange={(e) =>
-							setFormData({ ...formData, treatmentFree: e.target.checked })
-						}
-						className="mr-2"
-					/>
-					Treatment is Free?
-				</label>
+					<div className="flex items-center mb-2">
+						<input
+							type="checkbox"
+							checked={formData.treatmentFree || payment?.treatmentFree}
+							onChange={(e) =>
+								setFormData({ ...formData, treatmentFree: e.target.checked })
+							}
+							className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+						/>
+						<label className="text-gray-700">Treatment is Free?</label>
+					</div>
 
-				<label className="flex items-center">
-					<input
-						type="checkbox"
-						checked={formData.compensation || payment?.compensation}
-						onChange={(e) =>
-							setFormData({ ...formData, compensation: e.target.checked })
-						}
-						className="mr-2"
-					/>
-					Compensation Provided?
-				</label>
+					<div className="flex items-center mb-2">
+						<input
+							type="checkbox"
+							checked={formData.compensation || payment?.compensation}
+							onChange={(e) =>
+								setFormData({ ...formData, compensation: e.target.checked })
+							}
+							className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+						/>
+						<label className="text-gray-700">Compensation Provided?</label>
+					</div>
 
-				{formData.compensation && (
-					<textarea
-						name="details"
-						placeholder="Compensation Details"
-						value={formData.details || payment?.details}
-						onChange={(e) =>
-							setFormData({ ...formData, details: e.target.value })
-						}
-						className="w-full p-2 border rounded"
-						rows={3}
-					/>
-				)}
-				{errors.details && <p className="text-red-500">{errors.details}</p>}
+					{formData.compensation && (
+						<div className="mt-2">
+							<textarea
+								name="details"
+								placeholder="Compensation Details"
+								value={formData.details || payment?.details}
+								onChange={(e) =>
+									setFormData({ ...formData, details: e.target.value })
+								}
+								className="w-full p-2 border rounded border-gray-300 focus:ring focus:ring-blue-200"
+								rows={3}
+							/>
+							{errors.details && (
+								<p className="text-red-500 text-sm mt-1">{errors.details}</p>
+							)}
+						</div>
+					)}
+				</div>
 
-				<h3 className="text-lg font-semibold">Confidentiality</h3>
+				{/* Confidentiality Section */}
+				<div>
+					<h3 className="text-lg font-semibold text-gray-700 mb-4">
+						Confidentiality
+					</h3>
 
-				<label className="flex items-center">
-					<input
-						type="checkbox"
-						checked={formData.hasIdentifiers || confidentiality?.hasIdentifiers}
-						onChange={(e) =>
-							setFormData({ ...formData, hasIdentifiers: e.target.checked })
-						}
-						className="mr-2"
-					/>
-					Contains Identifiable Information?
-				</label>
+					<div className="flex items-center mb-2">
+						<input
+							type="checkbox"
+							checked={
+								formData.hasIdentifiers || confidentiality?.hasIdentifiers
+							}
+							onChange={(e) =>
+								setFormData({ ...formData, hasIdentifiers: e.target.checked })
+							}
+							className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+						/>
+						<label className="text-gray-700">
+							Contains Identifiable Information?
+						</label>
+					</div>
 
-				{formData.hasIdentifiers && (
-					<select
-						name="identifierType"
-						value={formData.identifierType || confidentiality?.identifierType}
-						onChange={(e) =>
-							setFormData({
-								...formData,
-								identifierType: e.target.value as "ANONYMOUS" | "IDENTIFIABLE",
-							})
-						}
-						className="w-full p-2 border rounded">
-						<option value="ANONYMOUS">Anonymous</option>
-						<option value="IDENTIFIABLE">Identifiable</option>
-					</select>
-				)}
-				<textarea
-					name="storageDetails"
-					placeholder="Describe how the data will be stored"
-					value={formData.storageDetails}
-					onChange={(e) =>
-						setFormData({ ...formData, storageDetails: e.target.value || "" })
-					}
-					className="w-full p-2 border rounded"
-					rows={3}
-				/>
+					{formData.hasIdentifiers && (
+						<div className="mb-2">
+							<select
+								name="identifierType"
+								value={
+									formData.identifierType || confidentiality?.identifierType
+								}
+								onChange={(e) =>
+									setFormData({
+										...formData,
+										identifierType: e.target.value as
+											| "ANONYMOUS"
+											| "IDENTIFIABLE",
+									})
+								}
+								className="w-full p-2 border rounded border-gray-300 focus:ring focus:ring-blue-200">
+								<option value="ANONYMOUS">Anonymous</option>
+								<option value="IDENTIFIABLE">Identifiable</option>
+							</select>
+						</div>
+					)}
 
-				<button
-					type="submit"
-					className="px-4 py-2 bg-blue-500 text-white rounded">
-					Save and Continue
-				</button>
+					<div>
+						<textarea
+							name="storageDetails"
+							placeholder="Describe how the data will be stored"
+							value={formData.storageDetails}
+							onChange={(e) =>
+								setFormData({
+									...formData,
+									storageDetails: e.target.value || "",
+								})
+							}
+							className="w-full p-2 border rounded border-gray-300 focus:ring focus:ring-blue-200"
+							rows={3}
+						/>
+					</div>
+				</div>
+
+				{/* Submit Button */}
+				<div className="flex justify-end">
+					<button
+						type="submit"
+						className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+						Save and Continue
+					</button>
+				</div>
 			</form>
 
-			{error && <p className="text-red-500">{error}</p>}
+			{error && <p className="text-red-500 mt-4">{error}</p>}
 		</div>
 	);
 }

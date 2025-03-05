@@ -116,9 +116,17 @@ export default function SummaryPage() {
 
 					<div className="flex justify-between mt-4">
 						<button
-							onClick={() => router.push(`/applications/new?step=9`)}
+							onClick={() =>
+								router.push(
+									`${
+										submitted
+											? "/applications"
+											: `/applications/new?step=11&applicationId=${applicationId}`
+									}`
+								)
+							}
 							className="px-4 py-2 bg-gray-300 rounded">
-							Back
+							Back to applications
 						</button>
 						<button
 							onClick={submitFinalApplication}

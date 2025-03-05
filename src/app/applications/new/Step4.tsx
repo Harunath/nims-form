@@ -105,76 +105,74 @@ export default function Step4() {
 	}
 
 	return (
-		<div>
-			<h2 className="text-xl font-bold">Step 4: Research Overview</h2>
+		<div className="max-w-2xl mx-auto p-6">
+			<h2 className="text-2xl font-bold text-gray-800 mb-6">
+				Step 4: Research Overview
+			</h2>
 
-			<form onSubmit={saveResearchOverview} className="space-y-4">
-				<textarea
-					name="summary"
-					placeholder="Research Summary"
-					value={formData.summary}
-					onChange={(e) =>
-						setFormData({ ...formData, summary: e.target.value })
-					}
-					className="w-full p-2 border rounded"
-					rows={4}
-					required
-				/>
-				{errors.summary && <p className="text-red-500">{errors.summary}</p>}
+			<form onSubmit={saveResearchOverview} className="grid grid-cols-2 gap-4">
+				{/* Research Summary */}
+				<div className="col-span-2">
+					<label className="block text-gray-700 font-medium mb-1">
+						Research Summary
+					</label>
+					<textarea
+						name="summary"
+						placeholder="Provide a brief summary of your research..."
+						value={formData.summary}
+						onChange={(e) =>
+							setFormData({ ...formData, summary: e.target.value })
+						}
+						className="w-full p-2 border rounded focus:outline-blue-500"
+						rows={4}
+						required
+					/>
+					{errors.summary && (
+						<p className="text-red-500 text-sm mt-1">{errors.summary}</p>
+					)}
+				</div>
 
-				<select
-					name="studyType"
-					value={formData.studyType}
-					onChange={(e) =>
-						setFormData({
-							...formData,
-							studyType: e.target.value as ResearchOverview["studyType"],
-						})
-					}
-					className="w-full p-2 border rounded"
-					required>
-					<option value="INTERVENTIONAL">Interventional</option>
-					<option value="CASE_CONTROL">Case Control</option>
-					<option value="COHORT">Cohort</option>
-					<option value="RETROSPECTIVE">Retrospective</option>
-					<option value="EPIDEMIOLOGICAL">Epidemiological</option>
-					<option value="CROSS_SECTIONAL">Cross Sectional</option>
-					<option value="SOCIO_BEHAVIORAL">Socio-Behavioral</option>
-					<option value="BIOLOGICAL">Biological</option>
-				</select>
+				{/* Study Type */}
+				<div className="col-span-2">
+					<label className="block text-gray-700 font-medium mb-1">
+						Study Type
+					</label>
+					<select
+						name="studyType"
+						value={formData.studyType}
+						onChange={(e) =>
+							setFormData({
+								...formData,
+								studyType: e.target.value as ResearchOverview["studyType"],
+							})
+						}
+						className="w-full p-2 border rounded focus:outline-blue-500"
+						required>
+						<option value="INTERVENTIONAL">Interventional</option>
+						<option value="CASE_CONTROL">Case Control</option>
+						<option value="COHORT">Cohort</option>
+						<option value="RETROSPECTIVE">Retrospective</option>
+						<option value="EPIDEMIOLOGICAL">Epidemiological</option>
+						<option value="CROSS_SECTIONAL">Cross Sectional</option>
+						<option value="SOCIO_BEHAVIORAL">Socio-Behavioral</option>
+						<option value="BIOLOGICAL">Biological</option>
+					</select>
+				</div>
 
-				<button
-					type="submit"
-					className="px-4 py-2 bg-blue-500 text-white rounded">
-					{researchOverview
-						? "Update Research Overview"
-						: "Save Research Overview"}
-				</button>
+				{/* Submit Button */}
+				<div className="col-span-2 flex justify-end mt-4">
+					<button
+						type="submit"
+						className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+						{researchOverview
+							? "Update Research Overview"
+							: "Save Research Overview"}
+					</button>
+				</div>
 			</form>
 
-			{error && <p className="text-red-500">{error}</p>}
-
-			{/* Navigation */}
-			{/* <div className="flex justify-between mt-4">
-				<button
-					onClick={() =>
-						router.push(
-							`/applications/new?step=3&applicationId=${applicationId}`
-						)
-					}
-					className="px-4 py-2 bg-gray-300 rounded">
-					Back
-				</button>
-				<button
-					onClick={() =>
-						router.push(
-							`/applications/new?step=5&applicationId=${applicationId}`
-						)
-					}
-					className="px-4 py-2 bg-blue-500 text-white rounded">
-					Next
-				</button>
-			</div> */}
+			{/* Error Message */}
+			{error && <p className="text-red-500 mt-4">{error}</p>}
 		</div>
 	);
 }

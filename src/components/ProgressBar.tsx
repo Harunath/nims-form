@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 export default function ProgressBar() {
 	const searchParams = useSearchParams();
 	const step = Number(searchParams.get("step")) || 1;
-	const totalSteps = 10;
+	const totalSteps = 11;
 	const progress = (step / totalSteps) * 100;
 
 	return (

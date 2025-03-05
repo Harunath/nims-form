@@ -104,123 +104,176 @@ export default function Step1() {
 	}
 
 	return (
-		<div>
-			<h2 className="text-xl font-bold">Step 1: Application Details</h2>
-			<form onSubmit={saveApplication} className="space-y-4">
-				<input
-					type="text"
-					name="principalInvestigator"
-					placeholder="Principal Investigator"
-					value={formData.principalInvestigator}
-					onChange={(e) =>
-						setFormData({ ...formData, principalInvestigator: e.target.value })
-					}
-					className="w-full p-2 border rounded"
-				/>
-				{errors.principalInvestigator && (
-					<p className="text-red-500">{errors.principalInvestigator}</p>
-				)}
+		<div className="max-w-4xl mx-auto p-6">
+			<h2 className="text-2xl font-bold text-gray-800 mb-6">
+				Step 1: Application Details
+			</h2>
 
-				<input
-					type="text"
-					name="department"
-					placeholder="Department"
-					value={formData.department}
-					onChange={(e) =>
-						setFormData({ ...formData, department: e.target.value })
-					}
-					className="w-full p-2 border rounded"
-				/>
-				{errors.department && (
-					<p className="text-red-500">{errors.department}</p>
-				)}
+			<form onSubmit={saveApplication} className="grid grid-cols-2 gap-4">
+				{/* Principal Investigator */}
+				<div>
+					<label className="block text-gray-700 font-medium mb-1">
+						Principal Investigator
+					</label>
+					<input
+						type="text"
+						name="principalInvestigator"
+						value={formData.principalInvestigator}
+						onChange={(e) =>
+							setFormData({
+								...formData,
+								principalInvestigator: e.target.value,
+							})
+						}
+						className="w-full p-2 border rounded"
+					/>
+					{errors.principalInvestigator && (
+						<p className="text-red-500 text-sm">
+							{errors.principalInvestigator}
+						</p>
+					)}
+				</div>
 
-				<input
-					type="date"
-					name="submissionDate"
-					value={formData.submissionDate}
-					onChange={(e) =>
-						setFormData({ ...formData, submissionDate: e.target.value })
-					}
-					className="w-full p-2 border rounded"
-				/>
-				{errors.submissionDate && (
-					<p className="text-red-500">{errors.submissionDate}</p>
-				)}
+				{/* Department */}
+				<div>
+					<label className="block text-gray-700 font-medium mb-1">
+						Department
+					</label>
+					<input
+						type="text"
+						name="department"
+						value={formData.department}
+						onChange={(e) =>
+							setFormData({ ...formData, department: e.target.value })
+						}
+						className="w-full p-2 border rounded"
+					/>
+					{errors.department && (
+						<p className="text-red-500 text-sm">{errors.department}</p>
+					)}
+				</div>
 
-				<select
-					name="reviewType"
-					value={formData.reviewType}
-					onChange={(e) =>
-						setFormData({
-							...formData,
-							reviewType: e.target.value as "EXPEDITED" | "FULL_COMMITTEE",
-						})
-					}
-					className="w-full p-2 border rounded">
-					<option value="EXPEDITED">Expedited</option>
-					<option value="FULL_COMMITTEE">Full Committee</option>
-				</select>
+				{/* Submission Date */}
+				<div>
+					<label className="block text-gray-700 font-medium mb-1">
+						Submission Date
+					</label>
+					<input
+						type="date"
+						name="submissionDate"
+						value={formData.submissionDate}
+						onChange={(e) =>
+							setFormData({ ...formData, submissionDate: e.target.value })
+						}
+						className="w-full p-2 border rounded"
+					/>
+					{errors.submissionDate && (
+						<p className="text-red-500 text-sm">{errors.submissionDate}</p>
+					)}
+				</div>
 
-				<input
-					type="text"
-					name="title"
-					placeholder="Title"
-					value={formData.title}
-					onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-					className="w-full p-2 border rounded"
-				/>
-				{errors.title && <p className="text-red-500">{errors.title}</p>}
+				{/* Review Type */}
+				<div>
+					<label className="block text-gray-700 font-medium mb-1">
+						Review Type
+					</label>
+					<select
+						name="reviewType"
+						value={formData.reviewType}
+						onChange={(e) =>
+							setFormData({
+								...formData,
+								reviewType: e.target.value as "EXPEDITED" | "FULL_COMMITTEE",
+							})
+						}
+						className="w-full p-2 border rounded">
+						<option value="EXPEDITED">Expedited</option>
+						<option value="FULL_COMMITTEE">Full Committee</option>
+					</select>
+				</div>
 
-				<input
-					type="text"
-					name="acronym"
-					placeholder="Acronym (optional)"
-					value={formData.acronym}
-					onChange={(e) =>
-						setFormData({ ...formData, acronym: e.target.value })
-					}
-					className="w-full p-2 border rounded"
-				/>
+				{/* Title */}
+				<div className="col-span-2">
+					<label className="block text-gray-700 font-medium mb-1">Title</label>
+					<input
+						type="text"
+						name="title"
+						value={formData.title}
+						onChange={(e) =>
+							setFormData({ ...formData, title: e.target.value })
+						}
+						className="w-full p-2 border rounded"
+					/>
+					{errors.title && (
+						<p className="text-red-500 text-sm">{errors.title}</p>
+					)}
+				</div>
 
-				<input
-					type="text"
-					name="protocolNumber"
-					placeholder="Protocol Number"
-					value={formData.protocolNumber}
-					onChange={(e) =>
-						setFormData({ ...formData, protocolNumber: e.target.value })
-					}
-					className="w-full p-2 border rounded"
-				/>
-				{errors.protocolNumber && (
-					<p className="text-red-500">{errors.protocolNumber}</p>
-				)}
+				{/* Acronym */}
+				<div>
+					<label className="block text-gray-700 font-medium mb-1">
+						Acronym (optional)
+					</label>
+					<input
+						type="text"
+						name="acronym"
+						value={formData.acronym}
+						onChange={(e) =>
+							setFormData({ ...formData, acronym: e.target.value })
+						}
+						className="w-full p-2 border rounded"
+					/>
+				</div>
 
-				<input
-					type="text"
-					name="versionNumber"
-					placeholder="Version Number"
-					value={formData.versionNumber}
-					onChange={(e) =>
-						setFormData({ ...formData, versionNumber: e.target.value })
-					}
-					className="w-full p-2 border rounded"
-				/>
-				{errors.versionNumber && (
-					<p className="text-red-500">{errors.versionNumber}</p>
-				)}
+				{/* Protocol Number */}
+				<div>
+					<label className="block text-gray-700 font-medium mb-1">
+						Protocol Number
+					</label>
+					<input
+						type="text"
+						name="protocolNumber"
+						value={formData.protocolNumber}
+						onChange={(e) =>
+							setFormData({ ...formData, protocolNumber: e.target.value })
+						}
+						className="w-full p-2 border rounded"
+					/>
+					{errors.protocolNumber && (
+						<p className="text-red-500 text-sm">{errors.protocolNumber}</p>
+					)}
+				</div>
 
-				<div className="flex justify-end">
+				{/* Version Number */}
+				<div>
+					<label className="block text-gray-700 font-medium mb-1">
+						Version Number
+					</label>
+					<input
+						type="text"
+						name="versionNumber"
+						value={formData.versionNumber}
+						onChange={(e) =>
+							setFormData({ ...formData, versionNumber: e.target.value })
+						}
+						className="w-full p-2 border rounded"
+					/>
+					{errors.versionNumber && (
+						<p className="text-red-500 text-sm">{errors.versionNumber}</p>
+					)}
+				</div>
+
+				{/* Submit Button */}
+				<div className="col-span-2 flex justify-end">
 					<button
 						type="submit"
-						className="px-4 py-2 bg-blue-500 text-white rounded">
-						{"save & Next"}
+						className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+						Save & Next
 					</button>
 				</div>
 			</form>
 
-			{error && <p className="text-red-500">{error}</p>}
+			{error && <p className="text-red-500 mt-4">{error}</p>}
 		</div>
 	);
 }

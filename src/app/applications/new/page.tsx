@@ -12,6 +12,7 @@ import Step8 from "./Step8";
 import Step9 from "./Step9";
 import Summary from "./Summary";
 import { useApplicationStore } from "@/lib/store";
+import Step10 from "./Step10";
 
 export default function NewApplicationForm() {
 	const searchParams = useSearchParams();
@@ -46,12 +47,13 @@ export default function NewApplicationForm() {
 			{step === 7 && <Step7 />}
 			{step === 8 && <Step8 />}
 			{step === 9 && <Step9 />}
-			{step === 10 && <Summary />}
+			{step === 10 && <Step10 />}
+			{step === 11 && <Summary />}
 
 			{/* Navigation Buttons */}
 			{applicationId && (
 				<div className="flex justify-between mt-4">
-					{step > 1 ? (
+					{step > 1 && step < 11 ? (
 						<button
 							onClick={prevStep}
 							className="px-4 py-2 bg-gray-300 rounded">
@@ -60,7 +62,7 @@ export default function NewApplicationForm() {
 					) : (
 						<div />
 					)}
-					{step < 10 ? (
+					{step <= 10 ? (
 						<button
 							onClick={nextStep}
 							className="px-4 py-2 bg-blue-500 text-white rounded">
